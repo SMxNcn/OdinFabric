@@ -13,6 +13,7 @@
     "mixins.AbstractContainerScreenMixin",
     "mixins.AvatarRendererMixin",
     "mixins.BossBarHealthOverlayMixin",
+    "mixins.CameraMixin",
     "mixins.ChatListenerMixin",
     "mixins.ChatScreenMixin",
     "mixins.ClientPacketListenerMixin",

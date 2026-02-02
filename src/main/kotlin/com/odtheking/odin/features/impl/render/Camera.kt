@@ -1,5 +1,6 @@
 package com.odtheking.odin.features.impl.render
 
+import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
@@ -9,6 +10,7 @@ object Camera : Module(
     name = "Camera",
     description = "Disables front camera when enabled."
 ) {
+    val cameraClip by BooleanSetting("Camera Clip", false, desc = "Allows the camera to clip through blocks.")
 
     init {
         on<TickEvent.End> {
