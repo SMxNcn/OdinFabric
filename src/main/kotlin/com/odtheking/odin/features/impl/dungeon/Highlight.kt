@@ -1,5 +1,6 @@
 package com.odtheking.odin.features.impl.dungeon
 
+import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
@@ -22,13 +23,15 @@ object Highlight : Module(
     description = "Allows you to highlight selected entities."
 ) {
     private val highlightStar by BooleanSetting("Highlight Starred Mobs", true, desc = "Highlights starred dungeon mobs.")
+    private val highlightInvisible by BooleanSetting("Highlight Invisible Mobs", true, desc = "Highlight invisible starred dungeon mobs.").withDependency { highlightStar }
     private val color by ColorSetting("Highlight color", Colors.WHITE, true, desc = "The color of the highlight.")
+    private val disableDepth by BooleanSetting("Depth", true, desc = "Disables depth testing for highlight.")
     private val renderStyle by SelectorSetting("Render Style", "Outline", listOf("Filled", "Outline", "Filled Outline"), desc = "Style of the box.")
     private val hideNonNames by BooleanSetting("Hide non-starred names", true, desc = "Hides names of entities that are not starred.")
 
     private val teammateClassGlow by BooleanSetting("Teammate Class Glow", true, desc = "Highlights dungeon teammates based on their class color.")
 
-    private val dungeonMobSpawns = hashSetOf("Lurker", "Dreadlord", "Souleater", "Zombie", "Skeleton", "Skeletor", "Sniper", "Super Archer", "Spider", "Fels", "Withermancer", "Lost Adventurer", "Angry Archaeologist", "Frozen Adventurer")
+    private val dungeonMobSpawns = hashSetOf("Lurker", "Dreadlord", "Souleater", "Zombie", "Skeleton", "Skeletor", "Sniper", "Super Archer", "Spider", "Fels", "Withermancer", "Lost Adventurer", "Angry Archaeologist", "Frozen Adventurer", "Shadow Assassin")
     // https://regex101.com/r/QQf502/1
     private val starredRegex = Regex("^.*✯ .*\\d{1,3}(?:,\\d{3})*(?:\\.\\d+)?(?:[kM])?❤$")
 
@@ -48,7 +51,7 @@ object Highlight : Module(
 
                 val isStarred = starredRegex.matches(entityName)
 
-                if (hideNonNames && entity.isInvisible && !isStarred) {
+                if (hideNonNames && entity.isInvisible && !isStarred && !highlightInvisible) {
                     entitiesToRemove.add(entity)
                     return@forEach
                 }
@@ -68,7 +71,7 @@ object Highlight : Module(
             entities.forEach { entity ->
                 if (!entity.isAlive) return@forEach
 
-                drawStyledBox(entity.renderBoundingBox, color, renderStyle, true)
+                drawStyledBox(entity.renderBoundingBox, color, renderStyle, disableDepth)
 
             }
         }
@@ -83,7 +86,7 @@ object Highlight : Module(
             is ArmorStand -> false
             is WitherBoss -> false
             is Player -> entity.uuid.version() == 2 && entity != mc.player
-            else -> !entity.isInvisible
+            else -> highlightInvisible || !entity.isInvisible
         }
 
     @JvmStatic
