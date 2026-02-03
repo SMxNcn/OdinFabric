@@ -215,7 +215,7 @@ object ChatCommands : Module(
             ChatChannel.GUILD -> sendCommand("gc $message")
             ChatChannel.PARTY -> sendCommand("pc $message")
             ChatChannel.PRIVATE -> sendCommand("msg $name $message")
-            ChatChannel.COOP -> sendCommand("cc $message")
+            ChatChannel.COOP -> sendCommand("cchat $message")
         }
     }
 
