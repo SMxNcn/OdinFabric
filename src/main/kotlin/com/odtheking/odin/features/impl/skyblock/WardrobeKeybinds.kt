@@ -8,6 +8,7 @@ import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.clickSlot
+import com.odtheking.odin.utils.handlers.schedule
 import com.odtheking.odin.utils.modMessage
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import org.lwjgl.glfw.GLFW
@@ -32,6 +33,8 @@ object WardrobeKeybinds : Module(
     private val wardrobe7 by KeybindSetting("Wardrobe 7", GLFW.GLFW_KEY_7, desc = "Keybind to equip the seventh wardrobe slot.").withDependency { advanced }
     private val wardrobe8 by KeybindSetting("Wardrobe 8", GLFW.GLFW_KEY_8, desc = "Keybind to equip the eighth wardrobe slot.").withDependency { advanced }
     private val wardrobe9 by KeybindSetting("Wardrobe 9", GLFW.GLFW_KEY_9, desc = "Keybind to equip the ninth wardrobe slot.").withDependency { advanced }
+
+    private val autoClose by BooleanSetting("Auto Close", false, desc = "Auto-close wardrobe on equip. Only works with keybinds.")
 
     private val wardrobeRegex = Regex("Wardrobe \\((\\d)/(\\d)\\)")
     private val equippedRegex = Regex("Slot (\\d): Equipped")
@@ -68,6 +71,11 @@ object WardrobeKeybinds : Module(
         }
         if (disallowUnequippingEquipped && screen.menu.slots[index].item?.isEmpty == true) return false
         mc.player?.clickSlot(screen.menu.containerId, index)
+
+        if (autoClose) schedule(10) {
+            mc.player?.closeContainer()
+        }
+
         return true
     }
 }
