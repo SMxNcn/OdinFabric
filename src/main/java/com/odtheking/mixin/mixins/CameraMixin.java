@@ -13,7 +13,7 @@ public abstract class CameraMixin {
 
     @Redirect(method = "setup", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;getMaxZoom(F)F"))
     private float onGetMaxZoom(Camera camera, float originalDistance) {
-        if (com.odtheking.odin.features.impl.render.Camera.INSTANCE.getCameraClip()) {
+        if (com.odtheking.odin.features.impl.render.Camera.canCameraClip()) {
             return originalDistance;
         }
 
