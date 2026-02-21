@@ -132,7 +132,6 @@ object WaypointPackFileUtils {
         }
     }
 
-
     suspend fun getAllPacks() = withContext(Dispatchers.IO) {
         packsFolder.listFiles { f -> f.extension == "json" }
             ?.mapNotNull { file ->
