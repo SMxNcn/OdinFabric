@@ -57,14 +57,46 @@ object DungeonWaypoints : Module(
 
     private val settingsDropDown by DropdownSetting("Next Waypoint Settings")
     var waypointType by SelectorSetting("Waypoint Type", WaypointType.NONE.displayName, WaypointType.entries.map { it.displayName }, desc = "The type of waypoint you want to place.").withDependency { settingsDropDown }
-    private val colorPallet by SelectorSetting("Color pallet", "None", arrayListOf("None", "Aqua", "Magenta", "Yellow", "Lime", "Red"), desc = "The color pallet of the next waypoint you place.").withDependency { settingsDropDown }
-    var color by ColorSetting("Color", Colors.MINECRAFT_GREEN, true, desc = "The color of the next waypoint you place.").withDependency { colorPallet == 0 && settingsDropDown }
+    private val colorPalette by SelectorSetting("Color palette", "None", arrayListOf("None", "Aqua", "Magenta", "Yellow", "Lime", "Red"), desc = "The color palette of the next waypoint you place.").withDependency { settingsDropDown }
+    var color by ColorSetting("Color", Colors.MINECRAFT_GREEN, true, desc = "The color of the next waypoint you place.").withDependency { colorPalette == 0 && settingsDropDown }
     var filled by BooleanSetting("Filled", false, desc = "If the next waypoint you place should be 'filled'.").withDependency { settingsDropDown }
     var depthCheck by BooleanSetting("Depth check", false, desc = "Whether the next waypoint you place should have a depth check.").withDependency { settingsDropDown }
     var useBlockSize by BooleanSetting("Use block size", true, desc = "Use the size of the block you click for waypoint size.").withDependency { settingsDropDown }
     var sizeX by NumberSetting("Size X", 1.0, .1, 5.0, 0.01, desc = "The X size of the next waypoint you place.").withDependency { !useBlockSize && settingsDropDown }
     var sizeY by NumberSetting("Size Y", 1.0, .1, 5.0, 0.01, desc = "The Y size of the next waypoint you place.").withDependency { !useBlockSize && settingsDropDown }
     var sizeZ by NumberSetting("Size Z", 1.0, .1, 5.0, 0.01, desc = "The Z size of the next waypoint you place.").withDependency { !useBlockSize && settingsDropDown }
+
+    private val editModeSettings by DropdownSetting("Edit Mode Settings")
+    private var presetNone by ColorSetting("None Color", Colors.MINECRAFT_GREEN, true, "Color for \"None\" Waypoints").withDependency { editModeSettings }
+    private var presetNormal by ColorSetting("Normal Color", Colors.MINECRAFT_RED, true, "Color for Normal Waypoints").withDependency { editModeSettings }
+    private var presetSecret by ColorSetting("Secret Color", Colors.MINECRAFT_BLUE, true, "Color for cyclable preset 3.").withDependency { editModeSettings }
+    private var presetEtherwarp by ColorSetting("Etherwarp Color", Colors.MINECRAFT_GOLD, true, "Color for cyclable preset 4.").withDependency { editModeSettings }
+    private var cycleWaypointType by KeybindSetting("Cycle Waypoint", GLFW.GLFW_KEY_UNKNOWN, "Keybind to cycle the waypoint type.").withDependency { editModeSettings }
+        .onPress {
+            if(!allowEdits) return@onPress
+            when(waypointType) {
+                0 -> {
+                    color = presetNormal
+                    modMessage("§aWaypoint type changed to §cNormal§a.")
+                    waypointType++
+                }
+                1 -> {
+                    color = presetSecret
+                    modMessage("§aWaypoint type changed to §cSecret§a.")
+                    waypointType++
+                }
+                2 -> {
+                    color = presetEtherwarp
+                    modMessage("§aWaypoint type changed to §cEtherwarp§a.")
+                    waypointType++
+                }
+                3 -> {
+                    color = presetNone
+                    modMessage("§aWaypoint type changed to §cNone§a.")
+                    waypointType = 0
+                }
+            }
+        }
 
     private val resetButton by ActionSetting("Reset Current Room", desc = "Resets the waypoints for the current room.") {
         val room = DungeonUtils.currentRoom ?: return@ActionSetting modMessage("§cRoom not found!")
@@ -77,7 +109,7 @@ object DungeonWaypoints : Module(
     }
 
     private inline val selectedColor
-        get() = when (colorPallet) {
+        get() = when (colorPalette) {
             0 -> color
             1 -> Colors.MINECRAFT_DARK_AQUA
             2 -> Colors.MINECRAFT_DARK_PURPLE
