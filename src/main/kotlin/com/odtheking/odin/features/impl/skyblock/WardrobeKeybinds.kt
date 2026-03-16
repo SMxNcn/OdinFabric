@@ -4,10 +4,12 @@ import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.DropdownSetting
 import com.odtheking.odin.clickgui.settings.impl.KeybindSetting
+import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.clickSlot
+import com.odtheking.odin.utils.handlers.schedule
 import com.odtheking.odin.utils.modMessage
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import org.lwjgl.glfw.GLFW
@@ -32,6 +34,9 @@ object WardrobeKeybinds : Module(
     private val wardrobe7 by KeybindSetting("Wardrobe 7", GLFW.GLFW_KEY_7, desc = "Keybind to equip the seventh wardrobe slot.").withDependency { advanced }
     private val wardrobe8 by KeybindSetting("Wardrobe 8", GLFW.GLFW_KEY_8, desc = "Keybind to equip the eighth wardrobe slot.").withDependency { advanced }
     private val wardrobe9 by KeybindSetting("Wardrobe 9", GLFW.GLFW_KEY_9, desc = "Keybind to equip the ninth wardrobe slot.").withDependency { advanced }
+
+    private val autoClose by BooleanSetting("Auto Close", false, desc = "Auto-close wardrobe on equip. Only works with keybinds.")
+    private val autoCloseDelay by NumberSetting("Auto Close-Delay", 250, 50, 500, 10, desc = "Delay before auto-closing wardrobe.")
 
     private val wardrobeRegex = Regex("Wardrobe \\((\\d)/(\\d)\\)")
     private val equippedRegex = Regex("Slot (\\d): Equipped")
@@ -68,6 +73,12 @@ object WardrobeKeybinds : Module(
         }
         if (disallowUnequippingEquipped && screen.menu.slots[index].item?.isEmpty == true) return false
         mc.player?.clickSlot(screen.menu.containerId, index)
+
+        val delay = autoCloseDelay / 50
+        if (autoClose) schedule(delay + (0..2).random()) {
+            mc.player?.closeContainer()
+        }
+
         return true
     }
 }

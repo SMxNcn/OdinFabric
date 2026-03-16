@@ -25,6 +25,7 @@ object KeyHighlight : Module(
     private val announceKeySpawn by BooleanSetting("Announce Key Spawn", true, desc = "Announces when a key is spawned.")
     private val witherColor by ColorSetting("Wither Color", Colors.BLACK.withAlpha(0.8f), true, desc = "The color of the box.")
     private val bloodColor by ColorSetting("Blood Color", Colors.MINECRAFT_RED.withAlpha(0.8f), true, desc = "The color of the box.")
+    private val disableDepth by BooleanSetting("Depth", true, desc = "Disables depth testing for highlight.")
 
     private var currentKey: KeyType? = null
 
@@ -48,7 +49,7 @@ object KeyHighlight : Module(
                     return@on
                 }
                 val position = keyType.entity?.position() ?: return@on
-                drawStyledBox(AABB.unitCubeFromLowerCorner(position.add(-0.5, 1.0, -0.5)), keyType.color(), 2, true)
+                drawStyledBox(AABB.unitCubeFromLowerCorner(position.add(-0.5, 1.0, -0.5)), keyType.color(), 2, disableDepth)
             }
         }
 
