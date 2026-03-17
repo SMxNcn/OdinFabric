@@ -36,7 +36,7 @@ object WardrobeKeybinds : Module(
     private val wardrobe9 by KeybindSetting("Wardrobe 9", GLFW.GLFW_KEY_9, desc = "Keybind to equip the ninth wardrobe slot.").withDependency { advanced }
 
     private val autoClose by BooleanSetting("Auto Close", false, desc = "Auto-close wardrobe on equip. Only works with keybinds.")
-    private val autoCloseDelay by NumberSetting("Auto Close-Delay", 250, 50, 500, 10, desc = "Delay before auto-closing wardrobe.")
+    private val autoCloseDelay by NumberSetting("Auto Close-Delay", 250, 50, 500, 10, desc = "Delay before auto-closing wardrobe.").withDependency { autoClose }
 
     private val wardrobeRegex = Regex("Wardrobe \\((\\d)/(\\d)\\)")
     private val equippedRegex = Regex("Slot (\\d): Equipped")
