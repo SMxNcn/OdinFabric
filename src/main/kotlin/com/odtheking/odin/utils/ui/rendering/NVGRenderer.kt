@@ -5,7 +5,7 @@ import com.odtheking.odin.utils.Color.Companion.alpha
 import com.odtheking.odin.utils.Color.Companion.blue
 import com.odtheking.odin.utils.Color.Companion.green
 import com.odtheking.odin.utils.Color.Companion.red
-import net.minecraft.resources.ResourceLocation
+import com.odtheking.odin.utils.ui.rendering.FontManager.loadFont
 import org.lwjgl.nanovg.NVGColor
 import org.lwjgl.nanovg.NVGPaint
 import org.lwjgl.nanovg.NanoSVG.*
@@ -25,7 +25,7 @@ object NVGRenderer {
     private val nvgColor = NVGColor.malloc()
     private val nvgColor2: NVGColor = NVGColor.malloc()
 
-    val defaultFont = Font("Default", mc.resourceManager.getResource(ResourceLocation.parse("odin:font.ttf")).get().open())
+    val defaultFont = loadFont()
 
     private val fontMap = HashMap<Font, NVGFont>()
     private val fontBounds = FloatArray(4)

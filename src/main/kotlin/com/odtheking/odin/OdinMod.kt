@@ -15,6 +15,7 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonListener
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.ScanUtils
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
+import com.odtheking.odin.utils.ui.rendering.FontManager.initFont
 import com.odtheking.odin.utils.ui.rendering.NVGPIPRenderer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -84,6 +85,7 @@ object OdinMod : ClientModInitializer {
         }
 
         scope.launch {
+            initFont()
             postData("https://api.odtheking.com/tele/", """{"username": "${mc.user?.name?.takeIf { !it.matches(Regex("Player\\d{2,3}")) } ?: return@launch}", "version": "Fabric $version"}""")
         }
     }
