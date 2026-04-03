@@ -1,0 +1,14 @@
+{
+    "items": [
+        { "name": "Thunderlord VII", "weight": 0.00351 },
+        { "name": "Master Skull - Tier 5", "weight": 0.00337 },
+        { "name": "Fifth Master Star", "weight": 0.00334 },
+        { "name": "Implosion", "weight": 0.00179 },
+        { "name": "Shadow Warp", "weight": 0.00179 },
+        { "name": "Wither Shield", "weight": 0.00179 },
+        { "name": "Necron's Handle", "weight": 0.00129 },
+        { "name": "Dark Claymore", "weight": 0.00072 },
+        { "name": "Necron Dye", "weight": 0.00040 },
+        { "name": "Shiny Necron's Handle", "weight": 0.00006 }
+    ]
+}

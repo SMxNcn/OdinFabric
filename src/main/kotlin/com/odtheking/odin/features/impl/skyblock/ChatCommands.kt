@@ -9,6 +9,10 @@ import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.features.impl.dungeon.DungeonQueue
 import com.odtheking.odin.utils.*
+import com.odtheking.odin.utils.files.WeightedItem
+import com.odtheking.odin.utils.files.getRandomTip
+import com.odtheking.odin.utils.files.getRollResult
+import com.odtheking.odin.utils.files.loadFiles
 import com.odtheking.odin.utils.handlers.schedule
 import com.odtheking.odin.utils.skyblock.LocationUtils
 import com.odtheking.odin.utils.skyblock.PartyUtils
@@ -55,13 +59,20 @@ object ChatCommands : Module(
     private val partyPromote by BooleanSetting("Promote", false, desc = "Executes the /party promote command.").withDependency { showSettings }
     private val location by BooleanSetting("Location", true, desc = "Sends your current location.").withDependency { showSettings }
     private val holding by BooleanSetting("Holding", true, desc = "Sends the item you are holding.").withDependency { showSettings }
+    private val tips by BooleanSetting("Tips", true, desc = "Send a random tip.").withDependency { showSettings }
+    private val roll by BooleanSetting("Roll", true, desc = "Roll weighted items 10 times.").withDependency { showSettings }
 
     // https://regex101.com/r/joY7dm/1
     private val messageRegex = Regex("^(?:Party > (\\[[^]]*?])? ?(\\w{1,16})(?: [ቾ⚒])?: ?(.+)$|Guild > (\\[[^]]*?])? ?(\\w{1,16})(?: \\[([^]]*?)])?: ?(.+)$|Co-op > (\\[[^]]*?])? ?(\\w{1,16}): ?(.+)$|From (\\[[^]]*?])? ?(\\w{1,16}): ?(.+)$)")
     private val endRunRegex = Regex(" {29}> EXTRA STATS <|^\\[NPC] Elle: Good job everyone. A hard fought battle come to an end. Let's get out of here before we run into any more trouble!$")
     private val dtReason = mutableListOf<Pair<String, String>>()
 
+    var tipsJson: List<String> = emptyList()
+    var weightedItems: List<WeightedItem> = emptyList()
+
     init {
+        loadFiles()
+
         on<ChatPacketEvent> {
             if (value.matches(endRunRegex)) {
                 if (!dt || dtReason.isEmpty()) return@on
@@ -117,11 +128,11 @@ object ChatCommands : Module(
             ChatChannel.PARTY -> mapOf(
                 "coords" to coords, "odin" to odin, "boop" to boop, "kick" to kick, "cf" to coinFlip, "8ball" to eightBall, "dice" to dice, "racism" to racism, "tps" to tps, "warp" to partyWarp,
                 "allinvite" to partyAllInvite, "pt" to partyTransfer, "m?" to queInstance, "f?" to queInstance, "t?" to queInstance, "time" to time,
-                "demote" to partyDemote, "promote" to partyPromote, "reinvite" to reinvite
+                "demote" to partyDemote, "promote" to partyPromote, "reinvite" to reinvite, "tips" to tips, "roll" to roll
             )
             ChatChannel.GUILD -> mapOf("coords" to coords, "odin" to odin, "boop" to boop, "cf" to coinFlip, "8ball" to eightBall, "dice" to dice, "racism" to racism, "ping" to ping, "tps" to tps, "time" to time)
             ChatChannel.PRIVATE -> mapOf("coords" to coords, "odin" to odin, "boop" to boop, "cf" to coinFlip, "8ball" to eightBall, "dice" to dice, "racism" to racism, "ping" to ping, "tps" to tps, "invite" to invite, "time" to time)
-            ChatChannel.COOP -> mapOf("coords" to coords, "odin" to odin, "boop" to boop, "cf" to coinFlip, "8ball" to eightBall, "dice" to dice, "ping" to ping, "tps" to tps, "time" to time)
+            ChatChannel.COOP -> mapOf("coords" to coords, "odin" to odin, "boop" to boop, "cf" to coinFlip, "8ball" to eightBall, "dice" to dice, "ping" to ping, "tps" to tps, "time" to time, "tips" to tips, "roll" to roll)
         }
 
         val words = message.drop(1).split(" ").map { it.lowercase() }
@@ -142,6 +153,8 @@ object ChatCommands : Module(
             "time" -> if (time) channelMessage("Current Time: ${ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z"))}", name, channel)
             "location" -> if (location) channelMessage("Current Location: ${LocationUtils.currentArea.displayName}", name, channel)
             "holding" -> if (holding) channelMessage("Holding: ${mc.player?.mainHandItem?.hoverName?.string?.noControlCodes ?: "Nothing :("}", name, channel)
+            "tips" -> if (tips) channelMessage(getRandomTip(), name, channel)
+            "roll" -> if (roll) channelMessage(getRollResult(name, 10), name, channel)
 
             // party commands
 
