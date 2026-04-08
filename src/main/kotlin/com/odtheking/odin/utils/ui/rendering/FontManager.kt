@@ -10,7 +10,7 @@ import java.nio.channels.Channels
 
 object FontManager {
     private const val FONT_URL = "https://gitee.com/mixturedg/necron-client-repo/raw/master/fonts/"
-    private const val FONT_DIR = "config/odin/addons/fonts"
+    private const val FONT_DIR = "config/necron/fonts"
     private const val FONT_NAME = "MiSans-Demibold.ttf"
     private val fontFile = File(FONT_DIR, FONT_NAME)
 
