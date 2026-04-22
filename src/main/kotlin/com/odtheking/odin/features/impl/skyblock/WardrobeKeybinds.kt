@@ -59,15 +59,21 @@ object WardrobeKeybinds : Module(
 
         val equippedIndex = screen.menu.slots.find { equippedRegex.matches(it.item.hoverName.string) }?.index
 
+        var shouldAutoClose = false
+
         val index = when (keyCode) {
             nextPageKeybind.value -> if (current < total) 53 else return false
             previousPageKeybind.value -> if (current > 1) 45 else return false
-            unequipKeybind.value -> equippedIndex ?: return false
+            unequipKeybind.value -> {
+                shouldAutoClose = true
+                equippedIndex ?: return false
+            }
             else -> {
                 val keyIndex = arrayOf(wardrobe1, wardrobe2, wardrobe3, wardrobe4, wardrobe5, wardrobe6, wardrobe7, wardrobe8, wardrobe9)
                     .indexOfFirst { it.value == keyCode }.takeIf { it != -1 } ?: return false
 
                 if (equippedIndex == keyIndex + 36 && disallowUnequippingEquipped) return modMessage("§cArmor already equipped.").let { false }
+                shouldAutoClose = true
                 keyIndex + 36
             }
         }
@@ -75,7 +81,7 @@ object WardrobeKeybinds : Module(
         mc.player?.clickSlot(screen.menu.containerId, index)
 
         val delay = autoCloseDelay / 50
-        if (autoClose) schedule(delay + (0..2).random()) {
+        if (autoClose && shouldAutoClose) schedule(delay + (0..2).random()) {
             mc.player?.closeContainer()
         }
 
